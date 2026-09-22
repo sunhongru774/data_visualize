@@ -1,0 +1,13 @@
+{
+  "metrics": {
+    "cases": 670538.0,
+    "deaths": 1919.0,
+    "incidence": 47.7644444838316,
+    "mortality": 0.136696158852254
+  },
+  "year": 2020,
+  "careerTop": {
+    "name": "农牧渔民",
+    "rate": 61.5
+  }
+}

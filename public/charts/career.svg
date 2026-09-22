@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="271.9417pt" height="191.7pt" viewBox="0 0 271.9417 191.7" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-09-22T21:09:02.015075</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.10.9, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 191.7 
+L 271.9417 191.7 
+L 271.9417 0 
+L 0 0 
+L 0 191.7 
+z
+" style="fill: none; opacity: 0"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 26.249569 114.562379 
+C 29.741161 127.549308 36.798932 139.303379 46.621012 148.489148 
+C 56.443091 157.674917 68.642852 163.930804 81.834215 166.546047 
+C 95.025577 169.161286 108.689296 168.032944 121.272956 163.289205 
+C 133.856616 158.545466 144.864897 150.373066 153.04708 139.700511 
+C 161.229262 129.027957 166.263278 116.275351 167.577187 102.891584 
+C 168.891095 89.507818 166.43317 76.019713 160.482682 63.95973 
+C 154.532194 51.899748 145.323356 41.742594 133.902448 34.642286 
+C 122.481539 27.541977 109.298102 23.778 95.849997 23.778 
+L 95.849998 49.72392 
+C 104.456786 49.72392 112.894185 52.132865 120.203567 56.677063 
+C 127.512948 61.22126 133.406604 67.721839 137.214916 75.440227 
+C 141.023229 83.158617 142.596301 91.791004 141.7554 100.356614 
+C 140.914498 108.922225 137.692728 117.083892 132.456131 123.914327 
+C 127.219534 130.744762 120.174234 135.975098 112.120692 139.011091 
+C 104.067149 142.047084 95.322369 142.769223 86.879898 141.09547 
+C 78.437426 139.421715 70.629578 135.417947 64.343447 129.539055 
+C 58.057316 123.660163 53.540343 116.137557 51.305724 107.825923 
+z
+" style="fill: #14b8a6; stroke: #061824; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 29.79997 67.009631 
+C 26.550964 74.450483 24.58257 82.387139 23.978048 90.483858 
+C 23.373522 98.580577 24.14153 106.721558 26.249569 114.562379 
+L 51.305724 107.825923 
+C 49.956579 102.807797 49.465054 97.597569 49.851951 92.415669 
+C 50.238845 87.233769 51.498617 82.154309 53.577981 77.392164 
+z
+" style="fill: #38bdf8; stroke: #061824; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 47.629598 42.285406 
+C 43.821465 45.7136 40.389748 49.538144 37.39271 53.694119 
+C 34.395671 57.850094 31.850355 62.313855 29.79997 67.009631 
+L 53.577981 77.392164 
+C 54.890227 74.386867 56.519229 71.53006 58.437334 68.870236 
+C 60.355439 66.210412 62.551737 63.762704 64.988943 61.56866 
+z
+" style="fill: #818cf8; stroke: #061824; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 71.859883 27.887898 
+C 67.397937 29.462933 63.101924 31.47356 59.03408 33.890649 
+C 54.966238 36.307739 51.146299 39.119572 47.629598 42.285406 
+L 64.988943 61.56866 
+C 67.239631 59.542526 69.684392 57.742953 72.287811 56.196016 
+C 74.891232 54.649078 77.64068 53.362277 80.496325 52.354255 
+z
+" style="fill: #f59e0b; stroke: #061824; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 95.850001 23.778 
+C 91.771426 23.778 87.700202 24.124209 83.680192 24.812903 
+C 79.660183 25.501597 75.705878 26.530293 71.859883 27.887898 
+L 80.496325 52.354255 
+C 82.957762 51.485387 85.488517 50.827022 88.061323 50.386258 
+C 90.634129 49.945494 93.239712 49.72392 95.850001 49.72392 
+z
+" style="fill: #ef4444; stroke: #061824; stroke-linejoin: miter"/>
+   </g>
+   <g id="matplotlib.axis_1"/>
+   <g id="matplotlib.axis_2"/>
+   <g id="text_1">
+    <text style="font-weight: 700; font-size: 13px; font-family: 'Microsoft YaHei'; text-anchor: middle; fill: #d9f7ff" x="95.85" y="94.385038" transform="rotate(-0 95.85 94.385038)">农牧渔民</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 700; font-size: 14px; font-family: 'Microsoft YaHei'; text-anchor: middle; fill: #31d6ff" x="95.85" y="109.074829" transform="rotate(-0 95.85 109.074829)">61.50%</text>
+   </g>
+   <g id="legend_1">
+    <g id="patch_7">
+     <path d="M 182.3292 73.285625 
+L 188.7292 73.285625 
+L 188.7292 67.685625 
+L 182.3292 67.685625 
+z
+" style="fill: #14b8a6; stroke: #061824; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_3">
+     <text style="font-size: 8px; font-family: 'Microsoft YaHei'; text-anchor: start; fill: #d9f7ff" x="195.1292" y="73.285625" transform="rotate(-0 195.1292 73.285625)">农牧渔民  61.50%</text>
+    </g>
+    <g id="patch_8">
+     <path d="M 182.3292 85.669375 
+L 188.7292 85.669375 
+L 188.7292 80.069375 
+L 182.3292 80.069375 
+z
+" style="fill: #38bdf8; stroke: #061824; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_4">
+     <text style="font-size: 8px; font-family: 'Microsoft YaHei'; text-anchor: start; fill: #d9f7ff" x="195.1292" y="85.669375" transform="rotate(-0 195.1292 85.669375)">家务及待业  9.32%</text>
+    </g>
+    <g id="patch_9">
+     <path d="M 182.3292 98.053125 
+L 188.7292 98.053125 
+L 188.7292 92.453125 
+L 182.3292 92.453125 
+z
+" style="fill: #818cf8; stroke: #061824; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_5">
+     <text style="font-size: 8px; font-family: 'Microsoft YaHei'; text-anchor: start; fill: #d9f7ff" x="195.1292" y="98.053125" transform="rotate(-0 195.1292 98.053125)">工人  5.89%</text>
+    </g>
+    <g id="patch_10">
+     <path d="M 182.3292 110.436875 
+L 188.7292 110.436875 
+L 188.7292 104.836875 
+L 182.3292 104.836875 
+z
+" style="fill: #f59e0b; stroke: #061824; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_6">
+     <text style="font-size: 8px; font-family: 'Microsoft YaHei'; text-anchor: start; fill: #d9f7ff" x="195.1292" y="110.436875" transform="rotate(-0 195.1292 110.436875)">学生  5.44%</text>
+    </g>
+    <g id="patch_11">
+     <path d="M 182.3292 122.820625 
+L 188.7292 122.820625 
+L 188.7292 117.220625 
+L 182.3292 117.220625 
+z
+" style="fill: #ef4444; stroke: #061824; stroke-linejoin: miter"/>
+    </g>
+    <g id="text_7">
+     <text style="font-size: 8px; font-family: 'Microsoft YaHei'; text-anchor: start; fill: #d9f7ff" x="195.1292" y="122.820625" transform="rotate(-0 195.1292 122.820625)">离退休人员  4.69%</text>
+    </g>
+   </g>
+  </g>
+ </g>
+</svg>
