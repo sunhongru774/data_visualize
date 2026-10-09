@@ -6,7 +6,7 @@
   <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
    <cc:Work>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:date>2026-10-09T20:31:46.965463</dc:date>
+    <dc:date>2026-10-09T21:45:58.114587</dc:date>
     <dc:format>image/svg+xml</dc:format>
     <dc:creator>
      <cc:Agent>
@@ -77,7 +77,7 @@ L 277.997647 83.227838
 C 257.530137 71.123386 234.182101 64.736086 210.403187 64.736086 
 C 186.624273 64.736086 163.276238 71.123386 142.808727 83.227838 
 z
-" clip-path="url(#padf9846e37)" style="fill: #a5e3d8; stroke: #061824; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pa464dd6165)" style="fill: #a5e3d8; stroke: #061824; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_4">
     <path d="M 233.169808 171.700166 
@@ -87,7 +87,7 @@ L 258.541723 208.284066
 C 260.468608 199.663676 260.045039 190.681905 257.315455 182.281108 
 C 254.58587 173.880312 249.649193 166.364939 243.023372 160.523492 
 z
-" clip-path="url(#padf9846e37)" style="fill: #7dd3fc; stroke: #061824; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pa464dd6165)" style="fill: #7dd3fc; stroke: #061824; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_5">
     <path d="M 241.998222 211.196221 
@@ -97,7 +97,7 @@ L 214.5295 241.175653
 C 222.346433 240.436735 229.823241 237.611485 236.175464 232.996324 
 C 242.527688 228.381164 247.525121 222.143348 250.643439 214.93734 
 z
-" clip-path="url(#padf9846e37)" style="fill: #c4b5fd; stroke: #061824; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pa464dd6165)" style="fill: #c4b5fd; stroke: #061824; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_6">
     <path d="M 207.163372 231.797494 
@@ -107,7 +107,7 @@ L 170.830367 214.648517
 C 173.896964 221.735004 178.811509 227.869359 185.058373 232.407971 
 C 191.305238 236.946584 198.658034 239.724974 206.345315 240.451636 
 z
-" clip-path="url(#padf9846e37)" style="fill: #fcd34d; stroke: #061824; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pa464dd6165)" style="fill: #fcd34d; stroke: #061824; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="patch_7">
     <path d="M 176.805836 205.033726 
@@ -117,14 +117,14 @@ L 182.681349 166.079575
 C 177.050482 171.043853 172.855111 177.430695 170.535409 184.570002 
 C 168.215708 191.709309 167.855743 199.34235 169.493281 206.668276 
 z
-" clip-path="url(#padf9846e37)" style="fill: #fca5a5; stroke: #061824; stroke-width: 1.2; stroke-linejoin: miter"/>
+" clip-path="url(#pa464dd6165)" style="fill: #fca5a5; stroke: #061824; stroke-width: 1.2; stroke-linejoin: miter"/>
    </g>
    <g id="matplotlib.axis_1">
     <g id="xtick_1">
      <g id="line2d_1">
       <path d="M 210.403187 197.523828 
 L 210.403187 45.063828 
-" clip-path="url(#padf9846e37)" style="fill: none; stroke: #2f5a73; stroke-opacity: 0.4; stroke-width: 0.7; stroke-linecap: square"/>
+" clip-path="url(#pa464dd6165)" style="fill: none; stroke: #2f5a73; stroke-opacity: 0.4; stroke-width: 0.7; stroke-linecap: square"/>
      </g>
      <g id="text_1">
       <text style="font-size: 11px; font-family: 'Microsoft YaHei'; text-anchor: middle; fill: #ffffff" x="210.403187" y="19.593125" transform="rotate(-0 210.403187 19.593125)">农牧渔民</text>
@@ -134,7 +134,7 @@ L 210.403187 45.063828
      <g id="line2d_2">
       <path d="M 210.403187 197.523828 
 L 355.401264 150.411097 
-" clip-path="url(#padf9846e37)" style="fill: none; stroke: #2f5a73; stroke-opacity: 0.4; stroke-width: 0.7; stroke-linecap: square"/>
+" clip-path="url(#pa464dd6165)" style="fill: none; stroke: #2f5a73; stroke-opacity: 0.4; stroke-width: 0.7; stroke-linecap: square"/>
      </g>
      <g id="text_2">
       <text style="font-size: 11px; font-family: 'Microsoft YaHei'; text-anchor: middle; fill: #ffffff" x="382.506374" y="144.63341" transform="rotate(-0 382.506374 144.63341)">家务及待业</text>
@@ -144,7 +144,7 @@ L 355.401264 150.411097
      <g id="line2d_3">
       <path d="M 210.403187 197.523828 
 L 300.016927 320.866559 
-" clip-path="url(#padf9846e37)" style="fill: none; stroke: #2f5a73; stroke-opacity: 0.4; stroke-width: 0.7; stroke-linecap: square"/>
+" clip-path="url(#pa464dd6165)" style="fill: none; stroke: #2f5a73; stroke-opacity: 0.4; stroke-width: 0.7; stroke-linecap: square"/>
      </g>
      <g id="text_3">
       <text style="font-size: 11px; font-family: 'Microsoft YaHei'; text-anchor: middle; fill: #ffffff" x="316.768806" y="346.95284" transform="rotate(-0 316.768806 346.95284)">工人</text>
@@ -154,7 +154,7 @@ L 300.016927 320.866559
      <g id="line2d_4">
       <path d="M 210.403187 197.523828 
 L 120.789448 320.866559 
-" clip-path="url(#padf9846e37)" style="fill: none; stroke: #2f5a73; stroke-opacity: 0.4; stroke-width: 0.7; stroke-linecap: square"/>
+" clip-path="url(#pa464dd6165)" style="fill: none; stroke: #2f5a73; stroke-opacity: 0.4; stroke-width: 0.7; stroke-linecap: square"/>
      </g>
      <g id="text_4">
       <text style="font-size: 11px; font-family: 'Microsoft YaHei'; text-anchor: middle; fill: #ffffff" x="104.037568" y="346.95284" transform="rotate(-0 104.037568 346.95284)">学生</text>
@@ -164,7 +164,7 @@ L 120.789448 320.866559
      <g id="line2d_5">
       <path d="M 210.403187 197.523828 
 L 65.405111 150.411097 
-" clip-path="url(#padf9846e37)" style="fill: none; stroke: #2f5a73; stroke-opacity: 0.4; stroke-width: 0.7; stroke-linecap: square"/>
+" clip-path="url(#pa464dd6165)" style="fill: none; stroke: #2f5a73; stroke-opacity: 0.4; stroke-width: 0.7; stroke-linecap: square"/>
      </g>
      <g id="text_5">
       <text style="font-size: 11px; font-family: 'Microsoft YaHei'; text-anchor: middle; fill: #ffffff" x="38.3" y="144.63341" transform="rotate(-0 38.3 144.63341)">离退休人员</text>
@@ -210,7 +210,7 @@ C 250.250237 49.007502 230.424051 45.063828 210.403187 45.063828
   </g>
  </g>
  <defs>
-  <clipPath id="padf9846e37">
+  <clipPath id="pa464dd6165">
    <path d="M 362.863187 197.523828 
 C 362.863187 177.502964 358.919514 157.676778 351.257861 139.179912 
 C 343.596208 120.683046 332.365576 103.875217 318.208687 89.718328 

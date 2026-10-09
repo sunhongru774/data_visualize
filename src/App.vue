@@ -94,6 +94,26 @@
 
         </div>
 
+
+        <!-- 三维关联分析（可旋转 ECharts 3D） -->
+        <div
+          class="panel chart-panel clickable"
+          @click="openScatter3D"
+        >
+
+          <div class="panel-title">
+            <span></span>
+            疫情三维关联分析
+          </div>
+
+          <div class="chart-image-wrapper">
+
+            <Scatter3D />
+
+          </div>
+
+        </div>
+
       </section>
 
 
@@ -113,9 +133,7 @@
 
             <button
               class="expand-button"
-              @click.stop="
-                openMap()
-              "
+              @click.stop="openMap"
             >
               ⛶
             </button>
@@ -144,7 +162,7 @@
           class="panel chart-panel clickable"
           @click="
             openChart(
-              '/charts/scatter_corr.svg',
+              '/charts/age_scatter.svg',
               '发病率与死亡率相关性分析'
             )
           "
@@ -251,9 +269,7 @@
         <div class="modal-header">
 
           <div class="modal-title">
-
             {{ modalTitle }}
-
           </div>
 
           <button
@@ -277,9 +293,14 @@
             v-if="modalType === 'map'"
             class="modal-map"
           >
-
             <LungMap />
+          </div>
 
+          <div
+            v-if="modalType === 'scatter3d'"
+            class="modal-map"
+          >
+            <Scatter3D :key="'modal-3d-' + modalKey" />
           </div>
 
         </div>
@@ -316,6 +337,7 @@ import {
 } from 'vue'
 
 import LungMap from './components/LungMap.vue'
+import Scatter3D from './components/Scatter3D.vue'
 
 
 /* =========================
@@ -330,15 +352,14 @@ const modalTitle = ref('')
 
 const modalType = ref('chart')
 
+const modalKey = ref(0)
+
 
 /* =========================
    打开普通图表
 ========================= */
 
-function openChart(
-  image,
-  title
-) {
+function openChart(image, title) {
 
   modalImage.value = image
 
@@ -357,10 +378,26 @@ function openChart(
 
 function openMap() {
 
-  modalTitle.value =
-    '全国肺结核发病率空间分布'
+  modalTitle.value = '全国肺结核发病率空间分布'
 
   modalType.value = 'map'
+
+  modalVisible.value = true
+
+}
+
+
+/* =========================
+   打开三维关联分析
+========================= */
+
+function openScatter3D() {
+
+  modalTitle.value = '全国各省肺结核疫情三维关联分析'
+
+  modalType.value = 'scatter3d'
+
+  modalKey.value += 1   // 强制重建组件，确保每次都是新实例
 
   modalVisible.value = true
 
@@ -449,35 +486,24 @@ function closeModal() {
 
 }
 
-
 .title-area h1 {
 
   margin: 0;
 
-  font-size: clamp(
-    28px,
-    2.2vw,
-    46px
-  );
+  font-size: clamp(28px, 2.2vw, 46px);
 
   letter-spacing: 5px;
 
   font-weight: 700;
 
   background:
-    linear-gradient(
-      90deg,
-      #72e9ff,
-      #ffffff,
-      #65d6ff
-    );
+    linear-gradient(90deg, #72e9ff, #ffffff, #65d6ff);
 
   -webkit-background-clip: text;
 
   -webkit-text-fill-color: transparent;
 
 }
-
 
 .title-area p {
 
@@ -487,15 +513,9 @@ function closeModal() {
 
   letter-spacing: 5px;
 
-  color: rgba(
-    150,
-    225,
-    245,
-    0.65
-  );
+  color: rgba(150, 225, 245, 0.65);
 
 }
-
 
 .header-decoration {
 
@@ -508,33 +528,13 @@ function closeModal() {
   top: 70%;
 
   background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(
-        50,
-        211,
-        245,
-        0.8
-      ),
-      transparent
-    );
+    linear-gradient(90deg, transparent, rgba(50,211,245,0.8), transparent);
 
 }
 
+.header-decoration.left { left: 5%; }
 
-.header-decoration.left {
-
-  left: 5%;
-
-}
-
-
-.header-decoration.right {
-
-  right: 5%;
-
-}
+.header-decoration.right { right: 5%; }
 
 
 /* =====================================================
@@ -551,10 +551,7 @@ function closeModal() {
 
   display: grid;
 
-  grid-template-columns:
-    23%
-    49%
-    23%;
+  grid-template-columns: 23% 49% 23%;
 
   gap: 2.5%;
 
@@ -583,11 +580,7 @@ function closeModal() {
    中央
 ===================================================== */
 
-.center-column {
-
-  height: 100%;
-
-}
+.center-column { height: 100%; }
 
 
 /* =====================================================
@@ -600,50 +593,20 @@ function closeModal() {
 
   overflow: hidden;
 
-  border:
-    1px solid
-    rgba(
-      61,
-      196,
-      230,
-      0.26
-    );
+  border: 1px solid rgba(61, 196, 230, 0.26);
 
   background:
     linear-gradient(
       135deg,
-      rgba(
-        5,
-        31,
-        50,
-        0.88
-      ),
-      rgba(
-        4,
-        20,
-        35,
-        0.72
-      )
+      rgba(5, 31, 50, 0.88),
+      rgba(4, 20, 35, 0.72)
     );
 
   box-shadow:
-    inset 0 0 30px
-    rgba(
-      0,
-      180,
-      220,
-      0.035
-    ),
-    0 0 20px
-    rgba(
-      0,
-      100,
-      140,
-      0.08
-    );
+    inset 0 0 30px rgba(0, 180, 220, 0.035),
+    0 0 20px rgba(0, 100, 140, 0.08);
 
 }
-
 
 .panel::before {
 
@@ -659,15 +622,9 @@ function closeModal() {
 
   height: 1px;
 
-  background:
-    linear-gradient(
-      90deg,
-      #42ddff,
-      transparent
-    );
+  background: linear-gradient(90deg, #42ddff, transparent);
 
 }
-
 
 .panel::after {
 
@@ -683,12 +640,7 @@ function closeModal() {
 
   height: 1px;
 
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      #42ddff
-    );
+  background: linear-gradient(90deg, transparent, #42ddff);
 
 }
 
@@ -730,7 +682,6 @@ function closeModal() {
 
 }
 
-
 .panel-title span {
 
   display: inline-block;
@@ -741,21 +692,9 @@ function closeModal() {
 
   margin-right: 10px;
 
-  background:
-    linear-gradient(
-      180deg,
-      #72efff,
-      #1883b2
-    );
+  background: linear-gradient(180deg, #72efff, #1883b2);
 
-  box-shadow:
-    0 0 10px
-    rgba(
-      65,
-      221,
-      255,
-      0.8
-    );
+  box-shadow: 0 0 10px rgba(65, 221, 255, 0.8);
 
 }
 
@@ -784,7 +723,6 @@ function closeModal() {
 
 }
 
-
 .chart-image-wrapper img {
 
   width: 100%;
@@ -811,29 +749,13 @@ function closeModal() {
 
 }
 
-
 .clickable:hover {
 
-  transform:
-    translateY(-2px)
-    scale(1.005);
+  transform: translateY(-2px) scale(1.005);
 
-  border-color:
-    rgba(
-      80,
-      225,
-      255,
-      0.65
-    );
+  border-color: rgba(80, 225, 255, 0.65);
 
-  box-shadow:
-    0 0 25px
-    rgba(
-      20,
-      190,
-      230,
-      0.15
-    );
+  box-shadow: 0 0 25px rgba(20, 190, 230, 0.15);
 
 }
 
@@ -842,14 +764,7 @@ function closeModal() {
    地图
 ===================================================== */
 
-.map-panel {
-
-  width: 100%;
-
-  height: 100%;
-
-}
-
+.map-panel { width: 100%; height: 100%; }
 
 .map-container {
 
@@ -865,7 +780,6 @@ function closeModal() {
 
 }
 
-
 .map-title {
 
   position: relative;
@@ -873,7 +787,6 @@ function closeModal() {
   z-index: 20;
 
 }
-
 
 .expand-button {
 
@@ -906,16 +819,9 @@ function closeModal() {
 
   z-index: 9999;
 
-  background:
-    rgba(
-      0,
-      5,
-      12,
-      0.88
-    );
+  background: rgba(0, 5, 12, 0.88);
 
-  backdrop-filter:
-    blur(8px);
+  backdrop-filter: blur(8px);
 
   display: flex;
 
@@ -927,7 +833,6 @@ function closeModal() {
 
 }
 
-
 .modal-content {
 
   width: 94vw;
@@ -937,44 +842,19 @@ function closeModal() {
   background:
     linear-gradient(
       135deg,
-      rgba(
-        4,
-        28,
-        48,
-        0.98
-      ),
-      rgba(
-        2,
-        14,
-        27,
-        0.98
-      )
+      rgba(4, 28, 48, 0.98),
+      rgba(2, 14, 27, 0.98)
     );
 
-  border:
-    1px solid
-    rgba(
-      78,
-      217,
-      247,
-      0.4
-    );
+  border: 1px solid rgba(78, 217, 247, 0.4);
 
   border-radius: 12px;
 
   overflow: hidden;
 
-  box-shadow:
-    0 0 80px
-    rgba(
-      0,
-      180,
-      230,
-      0.18
-    );
+  box-shadow: 0 0 80px rgba(0, 180, 230, 0.18);
 
 }
-
 
 .modal-header {
 
@@ -988,17 +868,9 @@ function closeModal() {
 
   padding: 0 25px;
 
-  border-bottom:
-    1px solid
-    rgba(
-      80,
-      210,
-      240,
-      0.15
-    );
+  border-bottom: 1px solid rgba(80, 210, 240, 0.15);
 
 }
-
 
 .modal-title {
 
@@ -1010,7 +882,6 @@ function closeModal() {
 
 }
 
-
 .close-button {
 
   width: 40px;
@@ -1021,13 +892,7 @@ function closeModal() {
 
   border-radius: 50%;
 
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.06
-    );
+  background: rgba(255, 255, 255, 0.06);
 
   color: white;
 
@@ -1037,26 +902,15 @@ function closeModal() {
 
 }
 
-
 .close-button:hover {
 
-  background:
-    rgba(
-      255,
-      255,
-      255,
-      0.15
-    );
+  background: rgba(255, 255, 255, 0.15);
 
 }
 
-
 .modal-body {
 
-  height:
-    calc(
-      100% - 60px
-    );
+  height: calc(100% - 60px);
 
   padding: 20px;
 
@@ -1068,7 +922,6 @@ function closeModal() {
 
 }
 
-
 .modal-body img {
 
   width: 100%;
@@ -1078,7 +931,6 @@ function closeModal() {
   object-fit: contain;
 
 }
-
 
 .modal-map {
 
@@ -1105,38 +957,24 @@ function closeModal() {
 
   font-size: 11px;
 
-  color:
-    rgba(
-      160,
-      220,
-      235,
-      0.5
-    );
+  color: rgba(160, 220, 235, 0.5);
 
   letter-spacing: 1px;
 
 }
 
-
-.footer span {
-
-  margin: 0 10px;
-
-}
+.footer span { margin: 0 10px; }
 
 
 /* =====================================================
    响应式
 ===================================================== */
 
-@media (
-  max-width: 1200px
-) {
+@media (max-width: 1200px) {
 
   .dashboard-main {
 
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
 
     overflow-y: auto;
 
@@ -1161,4 +999,5 @@ function closeModal() {
   }
 
 }
+
 </style>

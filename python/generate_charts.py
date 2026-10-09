@@ -291,6 +291,118 @@ def scatter_correlation():
     fig.patch.set_alpha(0)
     save(fig, "age_scatter.svg")
 
+# 全国各省人口规模（第七次全国人口普查，单位：百万人），key 用省级全称
+POPULATION_MILLION = {
+    "北京市": 21.516, "天津市": 15.168, "河北省": 73.8375,
+    "山西省": 36.4796, "内蒙古自治区": 25.0481, "辽宁省": 43.9100,
+    "吉林省": 27.5238, "黑龙江省": 38.3300, "上海市": 24.2568,
+    "江苏省": 79.6006, "浙江省": 55.0800, "安徽省": 60.8290,
+    "福建省": 38.0600, "江西省": 45.4216, "山东省": 97.8943,
+    "河南省": 94.3600, "湖北省": 58.1600, "湖南省": 67.3724,
+    "广东省": 107.2400, "广西壮族自治区": 47.5400, "海南省": 9.0348,
+    "重庆市": 29.9140, "四川省": 81.4020, "贵州省": 35.0803,
+    "云南省": 47.1390, "西藏自治区": 3.1755, "陕西省": 37.7512,
+    "甘肃省": 25.9078, "青海省": 5.8342, "宁夏回族自治区": 6.6154,
+    "新疆维吾尔自治区": 22.9847,
+}
+
+
+# ---------- 8. 三维关联分析（人口规模 × 发病率 × 死亡率 + 回归趋势面） ----------
+def scatter_3d_regional():
+    from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
+
+    data = json.loads(
+        (ROOT / "public" / "data" / "zone_data.json").read_text(encoding="utf-8")
+    )
+    df = pd.DataFrame(data).dropna(subset=["cases", "incidence", "mortality"]).copy()
+    if df.empty:
+        print("三维关联分析：zone_data.json 为空，跳过。")
+        return
+
+    # 按省级全称关联人口
+    df["population"] = df["name"].map(POPULATION_MILLION)
+    df = df.dropna(subset=["population"])
+
+    print(f"三维关联分析：匹配到 {len(df)} 个省份的人口数据")
+
+    if df.empty:
+        print("三维关联分析：无匹配省份人口，跳过。")
+        return
+
+    X = df["population"].to_numpy(dtype=float)
+    Y = df["incidence"].to_numpy(dtype=float)
+    Z = df["mortality"].to_numpy(dtype=float)
+    n = len(df)
+
+    # 多元线性回归 Z = a + b·X + c·Y
+    X_mat = np.c_[np.ones(n), X, Y]
+    coefficients, residuals, rank, s = np.linalg.lstsq(X_mat, Z, rcond=None)
+    a, b, c = coefficients[0], coefficients[1], coefficients[2]
+
+    z_pred = X_mat @ coefficients
+    ss_res = float(np.sum((Z - z_pred) ** 2))
+    ss_tot = float(np.sum((Z - Z.mean()) ** 2))
+    r_squared = 1 - ss_res / ss_tot if ss_tot > 1e-12 else 0.0
+
+    df_model, df_resid = 2, n - 3
+    p_value = 0.0
+    if df_resid > 0 and 0 <= r_squared < 1:
+        f_stat = (r_squared / df_model) / ((1 - r_squared) / df_resid)
+        p_value = 1 - stats.f.cdf(f_stat, df_model, df_resid)
+
+    cmap = LinearSegmentedColormap.from_list(
+        "sc3d", ["#31d6ff", "#facc15", "#ef4444"]
+    )
+
+    fig = plt.figure(figsize=(7.6, 5.4), dpi=160)
+    ax = fig.add_subplot(111, projection="3d")
+    ax.set_facecolor("none")
+
+    scatter = ax.scatter(
+        X, Y, Z,
+        c=Y, cmap=cmap, s=62, alpha=0.88,
+        edgecolors="white", linewidths=0.5, depthshade=False
+    )
+
+    x_grid = np.linspace(X.min(), X.max(), 30)
+    y_grid = np.linspace(Y.min(), Y.max(), 30)
+    xg, yg = np.meshgrid(x_grid, y_grid)
+    zg = a + b * xg + c * yg
+    ax.plot_surface(xg, yg, zg, cmap=cmap, alpha=0.32,
+                    edgecolor="none", antialiased=True)
+
+    info = (
+        f"R² = {r_squared:.3f}\n"
+        f"Z = {a:.3f} + {b:.5f}·X + {c:.5f}·Y\n"
+        f"p = {p_value:.3e}    n = {n}"
+    )
+    ax.text2D(0.02, 0.98, info, transform=ax.transAxes,
+              va="top", ha="left", color="#ffffff", fontsize=8,
+              bbox=dict(boxstyle="round,pad=0.4",
+                        facecolor="#0b2a42",
+                        edgecolor="#31d6ff", alpha=0.92))
+
+    ax.set_xlabel("人口规模（百万）", color="#ffffff", fontsize=8, labelpad=6)
+    ax.set_ylabel("发病率（1/10万）", color="#ffffff", fontsize=8, labelpad=6)
+    ax.set_zlabel("死亡率（1/10万）", color="#ffffff", fontsize=8, labelpad=6)
+
+    ax.tick_params(colors="#ffffff", labelsize=6, pad=0)
+    for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
+        axis.pane.fill = False
+        axis.pane.set_edgecolor("#2f5a73")
+        axis.line.set_color("#2f5a73")
+        axis._axinfo["grid"]["color"] = (0.18, 0.35, 0.45, 0.55)
+
+    ax.view_init(elev=18, azim=-55)
+    ax.set_box_aspect((1.15, 1.0, 0.8))
+
+    cbar = fig.colorbar(scatter, ax=ax, pad=0.08, shrink=0.55)
+    cbar.set_label("发病率", color="#ffffff", fontsize=7)
+    cbar.ax.tick_params(colors="#ffffff", labelsize=6)
+    cbar.outline.set_edgecolor("#2f5a73")
+
+    fig.patch.set_alpha(0)
+    save(fig, "scatter_3d.svg")
 
 def update_summary(career_top):
     p = ROOT / "public" / "data" / "dashboard_summary.json"
@@ -305,5 +417,6 @@ if __name__ == "__main__":
     age_chart()
     province_top10()
     scatter_correlation()
+    scatter_3d_regional() 
     update_summary(top)
     print("SVG 图表生成完成：", OUT)
