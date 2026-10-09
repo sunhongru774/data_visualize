@@ -1,81 +1,589 @@
 # -*- coding: utf-8 -*-
-"""清洗省级肺结核数据。
-当前用户提供的数据中没有 ReportZoneYear.xls，而 ten_years.xlsx 已包含 2010-2020 年
-全国及各省的发病数、死亡数、发病率和死亡率，因此本脚本以 ten_years.xlsx 作为省级数据源。
+
 """
-from pathlib import Path
-import json
+生成 ECharts 中国地图数据
+
+输入：
+data/ReportZoneYear.xls
+data/china_base.json
+
+输出：
+src/data/zone.json
+"""
+
+import os
 import re
+import json
+import xml.etree.ElementTree as ET
+
 import pandas as pd
+import numpy as np
 
-ROOT = Path(__file__).resolve().parents[1]
-INPUT = ROOT / "data" / "ten_years.xlsx"
-OUT = ROOT / "public" / "data" / "zone_data.json"
-SUMMARY = ROOT / "public" / "data" / "dashboard_summary.json"
 
-PROVINCE_ALIASES = {
-    "内蒙古": "内蒙古自治区", "广西": "广西壮族自治区", "西藏": "西藏自治区",
-    "宁夏": "宁夏回族自治区", "新疆": "新疆维吾尔自治区", "北京": "北京市",
-    "天津": "天津市", "上海": "上海市", "重庆": "重庆市",
-    "河北": "河北省", "山西": "山西省", "辽宁": "辽宁省", "吉林": "吉林省",
-    "黑龙江": "黑龙江省", "江苏": "江苏省", "浙江": "浙江省", "安徽": "安徽省",
-    "福建": "福建省", "江西": "江西省", "山东": "山东省", "河南": "河南省",
-    "湖北": "湖北省", "湖南": "湖南省", "广东": "广东省", "海南": "海南省",
-    "四川": "四川省", "贵州": "贵州省", "云南": "云南省", "陕西": "陕西省",
-    "甘肃": "甘肃省", "青海": "青海省", "台湾": "台湾省"
-}
+BASE_DIR = os.path.dirname(
+    os.path.dirname(
+        os.path.abspath(__file__)
+    )
+)
 
-def clean_name(x):
-    s = re.sub(r"\s+", "", str(x)).strip()
-    if s in {"全国", "全"}: return "全国"
-    return PROVINCE_ALIASES.get(s, s)
+DATA_DIR = os.path.join(
+    BASE_DIR,
+    "data"
+)
+
+OUTPUT_DIR = os.path.join(
+    BASE_DIR,
+    "src",
+    "data"
+)
+
+os.makedirs(
+    OUTPUT_DIR,
+    exist_ok=True
+)
+
+
+# =====================================================
+# 数值
+# =====================================================
+
+def to_number(value):
+
+    if value is None:
+
+        return 0
+
+    if pd.isna(value):
+
+        return 0
+
+    text = str(value).strip()
+
+    if not text:
+
+        return 0
+
+    text = (
+        text
+        .replace(",", "")
+        .replace(" ", "")
+        .replace("%", "")
+    )
+
+    try:
+
+        return float(text)
+
+    except Exception:
+
+        return 0
+
+
+# =====================================================
+# XML XLS
+# =====================================================
+
+def read_xml_xls(
+    file_path
+):
+
+    NS = {
+        "ss":
+        "urn:schemas-microsoft-com:office:spreadsheet"
+    }
+
+    root = ET.parse(
+        file_path
+    ).getroot()
+
+    worksheet = root.find(
+        ".//ss:Worksheet",
+        NS
+    )
+
+    table = worksheet.find(
+        "ss:Table",
+        NS
+    )
+
+    rows = []
+
+    for row in table.findall(
+        "ss:Row",
+        NS
+    ):
+
+        values = []
+
+        for cell in row.findall(
+            "ss:Cell",
+            NS
+        ):
+
+            index = cell.attrib.get(
+                "{%s}Index" %
+                NS["ss"]
+            )
+
+            if index:
+
+                target = (
+                    int(index) - 1
+                )
+
+                while len(values) < target:
+
+                    values.append(
+                        None
+                    )
+
+            data = cell.find(
+                "ss:Data",
+                NS
+            )
+
+            if data is not None:
+
+                values.append(
+                    data.text
+                )
+
+            else:
+
+                values.append(
+                    None
+                )
+
+        rows.append(
+            values
+        )
+
+    return pd.DataFrame(
+        rows
+    )
+
+
+# =====================================================
+# Excel
+# =====================================================
+
+def read_zone_excel():
+
+    path = os.path.join(
+        DATA_DIR,
+        "ReportZoneYear.xls"
+    )
+
+    try:
+
+        df = pd.read_excel(
+            path
+        )
+
+    except Exception:
+
+        df = read_xml_xls(
+            path
+        )
+
+    return df
+
+
+# =====================================================
+# 省份名称标准化
+# =====================================================
+
+def normalize_name(
+    name
+):
+
+    name = str(
+        name
+    ).strip()
+
+    replace = {
+
+        "北京市":
+            "北京",
+
+        "天津市":
+            "天津",
+
+        "上海市":
+            "上海",
+
+        "重庆市":
+            "重庆",
+
+        "河北省":
+            "河北",
+
+        "山西省":
+            "山西",
+
+        "辽宁省":
+            "辽宁",
+
+        "吉林省":
+            "吉林",
+
+        "黑龙江省":
+            "黑龙江",
+
+        "江苏省":
+            "江苏",
+
+        "浙江省":
+            "浙江",
+
+        "安徽省":
+            "安徽",
+
+        "福建省":
+            "福建",
+
+        "江西省":
+            "江西",
+
+        "山东省":
+            "山东",
+
+        "河南省":
+            "河南",
+
+        "湖北省":
+            "湖北",
+
+        "湖南省":
+            "湖南",
+
+        "广东省":
+            "广东",
+
+        "海南省":
+            "海南",
+
+        "四川省":
+            "四川",
+
+        "贵州省":
+            "贵州",
+
+        "云南省":
+            "云南",
+
+        "陕西省":
+            "陕西",
+
+        "甘肃省":
+            "甘肃",
+
+        "青海省":
+            "青海",
+
+        "台湾省":
+            "台湾",
+
+        "内蒙古自治区":
+            "内蒙古",
+
+        "广西壮族自治区":
+            "广西",
+
+        "西藏自治区":
+            "西藏",
+
+        "宁夏回族自治区":
+            "宁夏",
+
+        "新疆维吾尔自治区":
+            "新疆",
+
+        "香港特别行政区":
+            "香港",
+
+        "澳门特别行政区":
+            "澳门"
+    }
+
+    return replace.get(
+        name,
+        name
+    )
+
+
+# =====================================================
+# 从数据中寻找省份
+# =====================================================
+
+def find_province_column(
+    df
+):
+
+    for col in df.columns:
+
+        text = str(col)
+
+        if (
+            "地区" in text
+            or "省份" in text
+            or "省" in text
+            or "区域" in text
+        ):
+
+            return col
+
+    return df.columns[0]
+
+
+# =====================================================
+# 发病率
+# =====================================================
+
+def find_rate_column(
+    df
+):
+
+    for col in df.columns:
+
+        text = str(col)
+
+        if "发病率" in text:
+
+            return col
+
+    return None
+
+
+# =====================================================
+# 病例数
+# =====================================================
+
+def find_cases_column(
+    df
+):
+
+    for col in df.columns:
+
+        text = str(col)
+
+        if (
+            "发病数" in text
+            or "病例数" in text
+        ):
+
+            return col
+
+    return None
+
+
+# =====================================================
+# 主程序
+# =====================================================
 
 def main():
-    if not INPUT.exists():
-        raise FileNotFoundError(f"找不到 {INPUT}")
-    raw = pd.read_excel(INPUT, header=None)
-    years = []
-    for c in range(1, raw.shape[1], 4):
-        v = raw.iat[1, c]
-        if pd.notna(v):
-            years.append((int(v), c))
-    # 只保留有完整四列指标的年份
-    years = [(y, c) for y, c in years if c + 3 < raw.shape[1]]
-    if not years:
-        raise ValueError("ten_years.xlsx 未识别出年份列")
-    target_year = 2020 if any(y == 2020 for y, _ in years) else max(y for y, _ in years)
-    col = dict(years)[target_year]
-    records = []
-    for r in range(3, raw.shape[0]):
-        name = clean_name(raw.iat[r, 0])
-        if not name or name == "全国":
-            continue
-        vals = [raw.iat[r, col+i] for i in range(4)]
-        if all(pd.isna(v) for v in vals):
-            continue
-        cases = float(vals[0]) if pd.notna(vals[0]) else 0
-        deaths = float(vals[1]) if pd.notna(vals[1]) else 0
-        incidence = float(vals[2]) if pd.notna(vals[2]) else 0
-        mortality = float(vals[3]) if pd.notna(vals[3]) else 0
-        records.append({"name": name, "cases": cases, "deaths": deaths,
-                        "incidence": incidence, "mortality": mortality, "year": target_year})
 
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(json.dumps(records, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(
+        "开始生成地图数据..."
+    )
 
-    nat = raw[raw[0].astype(str).str.replace(" ", "", regex=False).isin(["全国", "全"])].iloc[0]
-    nidx = col
-    national = {
-        "cases": float(nat.iloc[nidx]),
-        "deaths": float(nat.iloc[nidx+1]),
-        "incidence": float(nat.iloc[nidx+2]),
-        "mortality": float(nat.iloc[nidx+3])
-    }
-    summary = {"metrics": national, "year": target_year}
-    # careerTop 在 generate_charts.py 中补充
-    SUMMARY.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"已生成：{OUT}")
-    print(f"目标年份：{target_year}；省级记录：{len(records)}")
+    # -----------------------------------------
+    # 读取原始数据
+    # -----------------------------------------
+
+    df = read_zone_excel()
+
+    print(
+        "原始数据列："
+    )
+
+    print(
+        list(df.columns)
+    )
+
+    province_col = (
+        find_province_column(
+            df
+        )
+    )
+
+    rate_col = (
+        find_rate_column(
+            df
+        )
+    )
+
+    cases_col = (
+        find_cases_column(
+            df
+        )
+    )
+
+    print(
+        "地区列：",
+        province_col
+    )
+
+    print(
+        "发病率列：",
+        rate_col
+    )
+
+    print(
+        "发病数列：",
+        cases_col
+    )
+
+    # -----------------------------------------
+    # 构建数据
+    # -----------------------------------------
+
+    result = {}
+
+    for _, row in df.iterrows():
+
+        province = normalize_name(
+            row[province_col]
+        )
+
+        if not province:
+
+            continue
+
+        if (
+            "全国" in province
+            or "合计" in province
+        ):
+
+            continue
+
+        rate = 0
+
+        cases = 0
+
+        if rate_col:
+
+            rate = to_number(
+                row[rate_col]
+            )
+
+        if cases_col:
+
+            cases = to_number(
+                row[cases_col]
+            )
+
+        result[province] = {
+
+            "value":
+                rate,
+
+            "cases":
+                cases,
+
+            "deaths":
+                0
+        }
+
+    # -----------------------------------------
+    # 读取中国地图
+    # -----------------------------------------
+
+    china_path = os.path.join(
+        DATA_DIR,
+        "china_base.json"
+    )
+
+    with open(
+        china_path,
+        "r",
+        encoding="utf-8"
+    ) as f:
+
+        china = json.load(f)
+
+    # -----------------------------------------
+    # 合并
+    # -----------------------------------------
+
+    for feature in china.get(
+        "features",
+        []
+    ):
+
+        props = feature.setdefault(
+            "properties",
+            {}
+        )
+
+        name = props.get(
+            "name",
+            ""
+        )
+
+        normalized = normalize_name(
+            name
+        )
+
+        info = result.get(
+            normalized,
+            {}
+        )
+
+        props["name"] = name
+
+        props["value"] = (
+            info.get(
+                "value",
+                0
+            )
+        )
+
+        props["cases"] = (
+            info.get(
+                "cases",
+                0
+            )
+        )
+
+        props["deaths"] = (
+            info.get(
+                "deaths",
+                0
+            )
+        )
+
+    # -----------------------------------------
+    # 输出
+    # -----------------------------------------
+
+    output = os.path.join(
+        OUTPUT_DIR,
+        "zone.json"
+    )
+
+    with open(
+        output,
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+        json.dump(
+            china,
+            f,
+            ensure_ascii=False,
+            indent=2
+        )
+
+    print(
+        "\n地图数据生成完成："
+    )
+
+    print(
+        output
+    )
+
 
 if __name__ == "__main__":
+
     main()
