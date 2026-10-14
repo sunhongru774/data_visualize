@@ -22,6 +22,24 @@
 
       </div>
 
+      <!-- ============ 年份选择器 ============ -->
+      <div class="year-picker">
+        <span class="year-label">年份</span>
+        <select
+          class="year-select"
+          :value="currentYear"
+          @change="onYearChange"
+        >
+          <option
+            v-for="y in availableYears"
+            :key="y"
+            :value="y"
+          >
+            {{ y }} 年
+          </option>
+        </select>
+      </div>
+
       <div class="header-decoration right"></div>
 
     </header>
@@ -39,15 +57,10 @@
 
       <section class="left-column">
 
-        <!-- 职业 -->
+        <!-- 职业（不随年份变化） -->
         <div
           class="panel chart-panel clickable"
-          @click="
-            openChart(
-              '/charts/career.svg',
-              '肺结核患者职业构成分析'
-            )
-          "
+          @click="openChart('/charts/career.svg', '肺结核患者职业构成分析')"
         >
 
           <div class="panel-title">
@@ -67,15 +80,10 @@
         </div>
 
 
-        <!-- 全国趋势 -->
+        <!-- 全国趋势（按年份） -->
         <div
           class="panel chart-panel clickable"
-          @click="
-            openChart(
-              '/charts/trend.svg',
-              '全国肺结核疫情变化趋势'
-            )
-          "
+          @click="openChart(`/charts/trend_${currentYear}.svg`, '全国肺结核疫情变化趋势')"
         >
 
           <div class="panel-title">
@@ -86,7 +94,7 @@
           <div class="chart-image-wrapper">
 
             <img
-              src="/charts/trend.svg"
+              :src="`/charts/trend_${currentYear}.svg`"
               alt="全国趋势"
             />
 
@@ -95,7 +103,7 @@
         </div>
 
 
-        <!-- 三维关联分析（可旋转 ECharts 3D） -->
+        <!-- 三维关联分析（组件内部监听 currentYear 自动更新） -->
         <div
           class="panel chart-panel clickable"
           @click="openScatter3D"
@@ -157,15 +165,10 @@
 
       <section class="right-column">
 
-        <!-- 散点 -->
+        <!-- 散点（按年份） -->
         <div
           class="panel chart-panel clickable"
-          @click="
-            openChart(
-              '/charts/age_scatter.svg',
-              '发病率与死亡率相关性分析'
-            )
-          "
+          @click="openChart(`/charts/age_scatter_${currentYear}.svg`, '发病率与死亡率相关性分析')"
         >
 
           <div class="panel-title">
@@ -179,7 +182,7 @@
           <div class="chart-image-wrapper">
 
             <img
-              src="/charts/age_scatter.svg"
+              :src="`/charts/age_scatter_${currentYear}.svg`"
               alt="年龄散点分析"
             />
 
@@ -188,15 +191,10 @@
         </div>
 
 
-        <!-- 年龄 -->
+        <!-- 年龄（按年份） -->
         <div
           class="panel chart-panel clickable"
-          @click="
-            openChart(
-              '/charts/age_bar.svg',
-              '年龄组肺结核发病情况'
-            )
-          "
+          @click="openChart(`/charts/age_bar_${currentYear}.svg`, '年龄组肺结核发病情况')"
         >
 
           <div class="panel-title">
@@ -210,7 +208,7 @@
           <div class="chart-image-wrapper">
 
             <img
-              src="/charts/age_bar.svg"
+              :src="`/charts/age_bar_${currentYear}.svg`"
               alt="年龄组"
             />
 
@@ -219,15 +217,10 @@
         </div>
 
 
-        <!-- TOP10 -->
+        <!-- TOP10（按年份） -->
         <div
           class="panel chart-panel clickable"
-          @click="
-            openChart(
-              '/charts/province_top10.svg',
-              '各省肺结核发病率 TOP10'
-            )
-          "
+          @click="openChart(`/charts/province_top10_${currentYear}.svg`, '各省肺结核发病率 TOP10')"
         >
 
           <div class="panel-title">
@@ -241,7 +234,7 @@
           <div class="chart-image-wrapper">
 
             <img
-              src="/charts/province_top10.svg"
+              :src="`/charts/province_top10_${currentYear}.svg`"
               alt="省份TOP10"
             />
 
@@ -332,12 +325,17 @@
 
 <script setup>
 
-import {
-  ref
-} from 'vue'
+import { ref, onMounted } from 'vue'
 
 import LungMap from './components/LungMap.vue'
 import Scatter3D from './components/Scatter3D.vue'
+
+import {
+  currentYear,
+  availableYears,
+  setYear,
+  loadYears
+} from './data/yearBus.js'
 
 
 /* =========================
@@ -353,6 +351,17 @@ const modalTitle = ref('')
 const modalType = ref('chart')
 
 const modalKey = ref(0)
+
+
+/* =========================
+   年份切换
+========================= */
+
+function onYearChange(e) {
+
+  setYear(Number(e.target.value))
+
+}
 
 
 /* =========================
@@ -413,6 +422,17 @@ function closeModal() {
   modalVisible.value = false
 
 }
+
+
+/* =========================
+   页面加载：拉取可用年份
+========================= */
+
+onMounted(() => {
+
+  loadYears()
+
+})
 
 </script>
 
@@ -535,6 +555,83 @@ function closeModal() {
 .header-decoration.left { left: 5%; }
 
 .header-decoration.right { right: 5%; }
+
+
+/* =====================================================
+   年份选择器
+===================================================== */
+
+.year-picker {
+
+  position: absolute;
+
+  right: 5%;
+
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  z-index: 50;
+
+}
+
+.year-label {
+
+  font-size: 14px;
+
+  letter-spacing: 2px;
+
+  color: #a8e8ff;
+
+}
+
+.year-select {
+
+  background: rgba(4, 30, 50, 0.9);
+
+  color: #dffaff;
+
+  border: 1px solid rgba(80, 220, 250, 0.6);
+
+  border-radius: 4px;
+
+  padding: 5px 12px;
+
+  font-size: 14px;
+
+  letter-spacing: 1px;
+
+  outline: none;
+
+  cursor: pointer;
+
+  box-shadow: 0 0 12px rgba(0, 190, 220, 0.25);
+
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+}
+
+.year-select:hover {
+
+  border-color: #31d6ff;
+
+  box-shadow: 0 0 18px rgba(0, 220, 255, 0.45);
+
+}
+
+.year-select option {
+
+  background: #03121f;
+
+  color: #dffaff;
+
+}
 
 
 /* =====================================================
@@ -995,6 +1092,18 @@ function closeModal() {
   .center-column {
 
     min-height: 500px;
+
+  }
+
+  .year-picker {
+
+    right: 3%;
+
+    top: auto;
+
+    bottom: 6px;
+
+    transform: none;
 
   }
 

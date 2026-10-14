@@ -3,64 +3,65 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import * as echarts from 'echarts'
+import { currentYear } from '../data/yearBus.js'
 
 const mapRef = ref(null)
 let chart = null
+const geoCache = {}
 
-// 简称 → GeoJSON 标准名 映射
 const NAME_MAP = {
-  '内蒙古自治区': '内蒙古',
-  '广西壮族自治区': '广西',
-  '西藏自治区': '西藏',
-  '宁夏回族自治区': '宁夏',
+  '内蒙古自治区': '内蒙古', '广西壮族自治区': '广西',
+  '西藏自治区': '西藏', '宁夏回族自治区': '宁夏',
   '新疆维吾尔自治区': '新疆',
-  '北京市': '北京',
-  '天津市': '天津',
-  '上海市': '上海',
-  '重庆市': '重庆'
+  '北京市': '北京', '天津市': '天津',
+  '上海市': '上海', '重庆市': '重庆'
 }
 
-onMounted(async () => {
-  if (!mapRef.value) return
-  chart = echarts.init(mapRef.value)
+async function loadGeo(y) {
+  if (geoCache[y]) return geoCache[y]
+  const r = await fetch(`/data/zone_${y}.json`)
+  geoCache[y] = await r.json()
+  return geoCache[y]
+}
 
+function buildData(geoJson) {
+  return geoJson.features.map(f => {
+    const p = f.properties || {}
+    return {
+      name: p.name,
+      value: p.incidence || 0,
+      cases: p.cases || 0,
+      deaths: p.deaths || 0,
+      mortality: p.mortality || 0,
+      incidence: p.incidence || 0
+    }
+  })
+}
+
+function computeRange(data) {
+  const arr = data.map(d => d.value).filter(v => v > 0)
+  if (!arr.length) return [0, 1]
+  const mx = Math.max(...arr)
+  return [0, Math.max(1, Math.ceil(mx / 50) * 50)]
+}
+
+async function render(year) {
+  if (!chart) return
   try {
-    // 并行拉取 GeoJSON 边界 + 业务数据
-    const [geoRes, dataRes] = await Promise.all([
-      fetch('https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json'),
-      fetch('/data/zone_data.json')
-    ])
-    const geoJson = await geoRes.json()
-    const zoneData = await dataRes.json()
-
-    echarts.registerMap('china', geoJson)
-
-    // 建立索引（支持全称和简称双向匹配）
-    const dataIndex = {}
-    zoneData.forEach(item => {
-      dataIndex[item.name] = item
-      for (const [full, short] of Object.entries(NAME_MAP)) {
-        if (short === item.name) dataIndex[full] = item
-      }
-    })
-
-    const mapData = geoJson.features.map(f => {
-      const name = f.properties.name
-      const matched = dataIndex[name] ||
-        dataIndex[name.replace(/省|市|自治区|壮族|回族|维吾尔/g, '')]
-      return {
-        name,
-        value: matched ? matched.incidence : 0,
-        cases: matched ? matched.cases : 0,
-        deaths: matched ? matched.deaths : 0,
-        mortality: matched ? matched.mortality : 0
-      }
-    })
+    const geoJson = await loadGeo(year)
+    echarts.registerMap('china_' + year, geoJson)
+    const mapData = buildData(geoJson)
+    const [vmin, vmax] = computeRange(mapData)
 
     chart.setOption({
       backgroundColor: 'transparent',
+      title: {
+        text: `${year} 年全国肺结核发病率分布`,
+        left: 20, top: 8,
+        textStyle: { color: '#dffaff', fontSize: 14, fontWeight: 600 }
+      },
       tooltip: {
         trigger: 'item',
         backgroundColor: 'rgba(3,25,45,0.95)',
@@ -80,29 +81,22 @@ onMounted(async () => {
           `
         }
       },
-      // ✅ 图例移到右下角，尺寸加大
       visualMap: {
         type: 'continuous',
-        min: 0,
-        max: 200,
+        min: vmin, max: vmax,
         calculable: true,
         orient: 'vertical',
-        right: 25,
-        bottom: 30,
-        itemWidth: 20,
-        itemHeight: 150,
-        text: ['高', '低'],
-        textGap: 10,
+        right: 25, bottom: 30,
+        itemWidth: 20, itemHeight: 150,
+        text: ['高', '低'], textGap: 10,
         textStyle: { color: '#d8f8ff', fontSize: 12 },
         inRange: {
-          color: ['#0b2a42', '#075985', '#0ea5e9', '#fbbf24', '#ef4444']
+          color: ['#0b2a42','#075985','#0ea5e9','#fbbf24','#ef4444']
         }
       },
       geo: {
-        map: 'china',
-        roam: true,
-        zoom: 1.15,
-        center: [104, 35],
+        map: 'china_' + year,
+        roam: true, zoom: 1.15, center: [104, 35],
         selectedMode: false,
         label: { show: false },
         itemStyle: {
@@ -113,44 +107,40 @@ onMounted(async () => {
         emphasis: {
           label: { show: true, color: '#fff', fontSize: 12 },
           itemStyle: {
-            borderColor: '#fff',
-            borderWidth: 1.5,
-            areaColor: '#35bfc4'
+            borderColor: '#fff', borderWidth: 1.5, areaColor: '#35bfc4'
           }
         }
       },
       series: [{
         name: '肺结核发病率',
         type: 'map',
-        map: 'china',
+        map: 'china_' + year,
         geoIndex: 0,
         data: mapData
       }]
-    })
-
-    window.addEventListener('resize', resize)
-  } catch (err) {
-    console.error('地图加载失败：', err)
+    }, true)
+  } catch (e) {
+    console.error('地图加载失败：', e)
   }
+}
+
+watch(currentYear, y => render(y))
+
+onMounted(async () => {
+  if (!mapRef.value) return
+  chart = echarts.init(mapRef.value)
+  await render(currentYear.value)
+  window.addEventListener('resize', resize)
 })
 
-function resize() {
-  if (chart) chart.resize()
-}
+function resize() { if (chart) chart.resize() }
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', resize)
-  if (chart) {
-    chart.dispose()
-    chart = null
-  }
+  if (chart) { chart.dispose(); chart = null }
 })
 </script>
 
 <style scoped>
-.lung-map {
-  width: 100%;
-  height: 100%;
-  min-height: 300px;
-}
+.lung-map { width: 100%; height: 100%; min-height: 300px; }
 </style>
